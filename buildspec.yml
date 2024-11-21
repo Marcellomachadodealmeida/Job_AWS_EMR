@@ -6,4 +6,5 @@ phases:
       - echo "Iniciando a execução do job"
       - S3_DATA_SOURCE=s3://etl-job-emr/2024-11-21/input/Food_Establishment_Inspection_Data_20241121.csv
       - S3_OUTPUT=s3://etl-job-emr/2024-11-21/output/
-      - aws emr add-steps --cluster-id j-1TG5X4NM1BD07 --region us-east-1 --steps Type=CUSTOM_JAR,Name=PrimeiroStep,ActionOnFailure=CONTINUE,Jar=command-runner.jar,Args="[spark-submit,main.py,--data_source,s3://etl-job-emr/2024-11-21/input/Food_Establishment_Inspection_Data_20241121.csv,--output_uri,s3://etl-job-emr/2024-11-21/output/]"
+      - aws s3 cp main.py s3://etl-job-emr/2024-11-21/scripts/
+      - aws emr add-steps --cluster-id j-1TG5X4NM1BD07 --region us-east-1 --steps Type=CUSTOM_JAR,Name=PrimeiroStep,ActionOnFailure=CONTINUE,Jar=command-runner.jar,Args="[spark-submit,s3://etl-job-emr/2024-11-21/scripts/main.py,--data_source,s3://etl-job-emr/2024-11-21/input/Food_Establishment_Inspection_Data_20241121.csv,--output_uri,s3://etl-job-emr/2024-11-21/output/]"
