@@ -19,14 +19,14 @@ def transform_data(data_source: str, output_uri: str) -> None:
         QUERY_GROUP_BY_RED = """
             SELECT nome, descricao, count(*) AS total_violacoes_red
             FROM restaurantes_violacoes
-            WHERE tipo_violacao = "RED" and descricao LIKE 'Seating 0-12%'
+            WHERE tipo_violacao = "RED"
             GROUP BY nome
         """
 
         QUERY_GROUP_BY_BLUE = """
             SELECT nome, descricao, count(*) AS total_violacoes_red
             FROM restaurantes_violacoes
-            WHERE tipo_violacao = "BLUE" and descricao LIKE 'Seating 0-12%'
+            WHERE tipo_violacao = "BLUE"
             GROUP BY nome
         """
 
