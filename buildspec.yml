@@ -11,6 +11,5 @@ phases:
   build:
     commands:
       - echo "Iniciando a execução do job"
-      - aws configure --profile Marcello-admin
       - aws glue create-database
-        --database-input "{\"dbteste\":\"tempdbteste\"}" --profile Marcello-admin --endpoint https://glue.us-east-1.amazonaws.com
+        --database-input "{\"Name\":\"tempdbteste\"}" --endpoint https://glue.us-east-1.amazonaws.com
