@@ -1,10 +1,16 @@
 version: 0.2
 
 phases:
+  pre-build:
+    commands:
+      - echo "Iniciando Pre-build"
+      - aws s3 cp . s3://bucket-glue-incremental/input/ --exclude "*.py"
+      - aws s3 cp main.py s3://bucket-glue-incremental/scripts/
+      - table_name=$(echo aws s3 ls s3://bucket-glue-incremental/input/ | cut -c 1-18)
+      - echo $table_name
   build:
     commands:
       - echo "Iniciando a execução do job"
-      - S3_DATA_SOURCE=s3://etl-job-emr/2024-11-21/input/Food_Establishment_Inspection_Data_20241121.csv
-      - S3_OUTPUT=s3://etl-job-emr/2024-11-21/output/
-      - aws s3 cp main.py s3://etl-job-emr/2024-11-21/scripts/
-      - aws emr add-steps --cluster-id j-1TG5X4NM1BD07 --region us-east-1 --steps Type=CUSTOM_JAR,Name=PrimeiroStep,ActionOnFailure=CONTINUE,Jar=command-runner.jar,Args="[spark-submit,s3://etl-job-emr/2024-11-21/scripts/main.py,--data_source,s3://etl-job-emr/2024-11-21/input/Food_Establishment_Inspection_Data_20241121.csv,--output_uri,s3://etl-job-emr/2024-11-21/output/]"
+      - aws glue create-database \
+        --database-input "{\"dbteste\":\"tempdbteste\"}" --profile "Marcello-admin" --endpoint https://glue.us-east-1.amazonaws.com
+      
