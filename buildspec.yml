@@ -6,7 +6,7 @@ phases:
       - echo "Iniciando Pre-build"      
       - aws s3 cp input/* s3://bucket-glue-incremental/input/
       - aws s3 cp scripts/main.py s3://bucket-glue-incremental/scripts/
-      - table_name=Etl_Teste1
+      - table_name=Etl_Teste
       - echo $table_name
   build:
     commands:
@@ -17,6 +17,6 @@ phases:
       - aws glue create-crawler 
         --name crawlerteste 
         --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt 
-        --database-name tempdbteste 
+        --database-name $table_name 
         --targets "S3Targets=[{Path=s3://bucket-glue-incremental/input/Food_Establishment.csv}]"
       - aws glue start-crawler --name crawlerteste
