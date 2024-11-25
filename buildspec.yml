@@ -6,17 +6,16 @@ phases:
       - echo "Iniciando Pre-build"      
       - aws s3 cp input/* s3://bucket-glue-incremental/input/
       - aws s3 cp scripts/main.py s3://bucket-glue-incremental/scripts/
-      - table_name=Table_Etl_Teste
   build:
     commands:
       - echo "Iniciando a execução do job"
       - aws glue create-database
-        --database-input "{\"Name\":\"$table_name\"}" --endpoint https://glue.us-east-1.amazonaws.com
+        --database-input "{\"Name\":\"Table_Etl_Teste\"}" --endpoint https://glue.us-east-1.amazonaws.com
       - echo criando crawler
       - aws glue create-crawler 
         --name crawlerteste 
         --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt 
-        --database-name $table_name 
+        --database-name Table_Etl_Teste 
         --targets "S3Targets=[{Path=s3://bucket-glue-incremental/input/}]"
         --schema-change-policy UpdateBehavior=LOG,DeleteBehavior=LOG
       - aws glue start-crawler --name crawlerteste
