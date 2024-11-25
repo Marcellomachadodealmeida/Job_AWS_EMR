@@ -6,13 +6,13 @@ phases:
       - echo "Iniciando Pre-build"      
       - aws s3 cp input/* s3://bucket-glue-incremental/input/
       - aws s3 cp scripts/main.py s3://bucket-glue-incremental/scripts/
-      - table_name=Etl_Teste
+      - table_name=Etl_Teste1
       - echo $table_name
   build:
     commands:
       - echo "Iniciando a execução do job"
       - aws glue create-database
-        --database-input "{\"Name\":\"tempdbteste\"}" --endpoint https://glue.us-east-1.amazonaws.com
+        --database-input "{\"Name\":\"$table_name\"}" --endpoint https://glue.us-east-1.amazonaws.com
       - echo criando crawler
       - aws glue create-crawler 
         --name crawlerteste 
