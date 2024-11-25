@@ -17,5 +17,7 @@ phases:
         --name crawlerteste 
         --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt 
         --database-name $table_name 
-        --targets "S3Targets=[{Path=s3://bucket-glue-incremental/input/Food_Establishment.csv}]"
+        --targets "S3Targets=[{Path=s3://bucket-glue-incremental/input/}]"
+        --schema-change-policy UpdateBehavior=LOG,DeleteBehavior=LOG
       - aws glue start-crawler --name crawlerteste
+    
