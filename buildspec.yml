@@ -4,8 +4,8 @@ phases:
   pre_build:
     commands:
       - echo "Iniciando Pre-build"      
-      - aws s3 cp ./ s3://bucket-glue-incremental/input/ --exclude "*.py"
-      - aws s3 cp main.py s3://bucket-glue-incremental/scripts/
+      - aws s3 cp input/ s3://bucket-glue-incremental/input/ --exclude "*.py"
+      - aws s3 cp scripts/main.py s3://bucket-glue-incremental/scripts/
       - table_name=$(echo aws s3 ls s3://bucket-glue-incremental/input/ | cut -c 1-18)
       - echo $table_name
   build:
