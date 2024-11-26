@@ -6,7 +6,12 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-
+        
+      - name: Configure GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.NEW_TOKEN }}
+        run: echo "token criada"
+        
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
