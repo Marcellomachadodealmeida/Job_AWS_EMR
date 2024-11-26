@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Configure GitHub CLI
         env:
-          GH_TOKEN: ${{ secrets.NEW_TOKEN }}
+          GH_TOKEN: ${{ github.new_token_glue}}
         run: echo "token criada"
       
       - name: Trigger Workflow 1
@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Configure GitHub CLI
         env:
-          GH_TOKEN: ${{ secrets.NEW_TOKEN }}
+          GH_TOKEN: ${{ github.new_token_glue}}
         run: |
           gh auth login --with-token <<< "${GH_TOKEN}"
           
