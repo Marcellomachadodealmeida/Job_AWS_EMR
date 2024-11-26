@@ -12,8 +12,6 @@ jobs:
       - name: Configure GitHub CLI
         env:
           GH_TOKEN: ${{ secrets.NEW_TOKEN }}
-        run: |
-          gh auth login --with-token <<< "${GH_TOKEN}"
       
       - name: Trigger Workflow 1
         run: |
