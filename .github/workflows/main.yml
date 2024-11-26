@@ -37,7 +37,7 @@ jobs:
       - name: Check if Glue Database exists 
         id: check-db 
         run: | 
-          DB_NAME=Table_Etl_Teste 
+          DB_NAME="Table_Etl_Teste" 
           if aws glue get-database --name $DB_NAME; then 
             echo "Database $DB_NAME exists." 
             echo "::set-output name=exists::true" 
