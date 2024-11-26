@@ -38,7 +38,7 @@ jobs:
           
       - name: Trigger Workflow 2
         run: |
-          gh workflow run Job_2.yml
+          gh workflow run job_2.yml
           
 
     
