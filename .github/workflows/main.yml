@@ -1,0 +1,41 @@
+name: workflow_Glue
+on:
+  push:
+    branches:
+      -  main
+jobs:
+  job_1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+
+      - name: Deploy no S3
+        env:
+          BUCKET_NAME: bucket-glue-incremental
+        run: | 
+          aws s3 cp input/* s3://bucket-glue-incremental/input/
+          aws s3 cp scripts/main.py s3://bucket-glue-incremental/scripts/
+  
+  job_2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: create glue database
+        run: | 
+          aws glue create-database --database-input "{\"Name\":\"Table_Etl_Teste\"}" --endpoint https://glue.us-east-1.amazonaws.com
+
+      - name: create and start crawler
+        run : | 
+          aws glue create-crawler --name crawlerteste --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt \ 
+            --database-name Table_Etl_Teste --targets "S3Targets=[{Path=s3://bucket-glue-incremental/input/}]" \
+            --schema-change-policy UpdateBehavior=LOG,DeleteBehavior=LOG
+          aws glue start-crawler --name crawlerteste
+    
+        
+      
+      
