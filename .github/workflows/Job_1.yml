@@ -9,7 +9,7 @@ jobs:
         
       - name: Configure GitHub CLI
         env:
-          GH_TOKEN: ${{ secrets.NEW_TOKEN }}
+          GH_TOKEN: ${{ github.new_token_glue}}
         run: echo "token criada"
         
       - name: Configure AWS Credentials
