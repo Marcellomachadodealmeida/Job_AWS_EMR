@@ -9,6 +9,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Configure GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.NEW_TOKEN }}
+        run: |
+          gh auth login --with-token <<< "${GH_TOKEN}"
+      
       - name: Trigger Workflow 1
         run: |
           gh workflow run Job_1.yml
@@ -18,18 +24,16 @@ jobs:
     needs: trigger-workflow1
 
     steps:
+      - name: Configure GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.NEW_TOKEN }}
+        run: |
+          gh auth login --with-token <<< "${GH_TOKEN}"
+          
       - name: Trigger Workflow 2
         run: |
           gh workflow run Job_2.yml
           
-  trigger-workflow3:
-    runs-on: ubuntu-latest
-    needs: trigger-workflow2
-
-    steps:
-      - name: Trigger Workflow 3
-        run: |
-          gh workflow run Job_3.yml
 
     
         
