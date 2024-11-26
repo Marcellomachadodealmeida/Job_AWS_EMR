@@ -9,10 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
       - name: Configure GitHub CLI
         env:
           GH_TOKEN: ${{ github.new_token_glue}}
-        run: echo "token criada"
+        run: |
+          gh auth login --with-token <<< "${GH_TOKEN}"
       
       - name: Trigger Workflow 1
         run: |
@@ -23,6 +27,9 @@ jobs:
     needs: trigger-workflow1
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
       - name: Configure GitHub CLI
         env:
           GH_TOKEN: ${{ github.new_token_glue}}
