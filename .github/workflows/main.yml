@@ -21,7 +21,7 @@ jobs:
         env:
           BUCKET_NAME: bucket-glue-incremental
         run: | 
-          aws s3 cp input/* s3://bucket-glue-incremental/input/
+          aws s3 cp input/* s3://bucket-glue-incremental/input/a_processar/
           aws s3 cp scripts/main.py s3://bucket-glue-incremental/scripts/
   
   job_2:
@@ -34,19 +34,43 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY}} 
           aws-region: us-east-1
           
-      - name: create glue database
+      - name: Check if Glue Database exists 
+        id: check-db 
         run: | 
-          aws glue create-database --database-input "{\"Name\":\"Table_Etl_Teste\"}" --endpoint https://glue.us-east-1.amazonaws.com
+          DB_NAME=Table_Etl_Teste 
+          if aws glue get-database --name $DB_NAME; then 
+            echo "Database $DB_NAME exists." 
+            echo "::set-output name=exists::true" 
+          else 
+            echo "Database $DB_NAME does not exist." 
+            echo "::set-output name=exists::false" 
+          fi 
+      - name: Take action if database exists 
+        if: steps.check-db.outputs.exists == 'true' 
+        run: echo "Database exists, take necessary actions."
+        
+      - name: Take action if database does not exist 
+        if: steps.check-db.outputs.exists == 'false' 
+        run: | 
+          echo "create glue database"
+          aws glue create-database --database-input "{\"Name\":\"$DB_NAME\"}" --endpoint https://glue.us-east-1.amazonaws.com
 
       - name: create crawler
         run : >
           aws glue create-crawler --name crawlerteste --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt 
-          --database-name Table_Etl_Teste --targets "S3Targets=[{Path=s3://bucket-glue-incremental/input/}]"
+          --database-name Table_Etl_Teste --targets "S3Targets=[{Path=s3://bucket-glue-incremental/input/a_processar/}]"
+          --table-prefix ELT-JOB-
           --schema-change-policy UpdateBehavior=LOG,DeleteBehavior=LOG
       
       - name : Start Crawler
         run : |
           aws glue start-crawler --name crawlerteste
+
+      - name : Clean and transfer s3 Data
+        run : |
+          aws s3 cp s3://bucket-glue-incremental/input/a_processar/ s3://bucket-glue-incremental/input/processados/
+          aws s3 rm s3://bucket-glue-incremental/input/a_processar/ --recursive
+
     
         
       
