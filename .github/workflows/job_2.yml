@@ -1,0 +1,61 @@
+name: workflow_Glue_job2
+on: workflow_dispatch
+jobs:
+  job_2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY}} 
+          aws-region: us-east-1
+          
+      - name: Check if Glue Database exists 
+        id: check-db 
+        run: | 
+          DB_NAME=Table_Etl_Teste 
+          if aws glue get-database --name $DB_NAME; then 
+            echo "Database $DB_NAME exists." 
+            echo "::set-output name=exists::true" 
+          else 
+            echo "Database $DB_NAME does not exist."
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo $GITHUB_OUTPUT
+            echo "::set-output name=exists::false" 
+          fi 
+      - name: Take action if database exists 
+        if: steps.check-db.outputs.exists == 'true' 
+        run: echo "Database exists, take necessary actions."
+        
+      - name: Take action if database does not exist 
+        if: steps.check-db.outputs.exists == 'false' 
+        run: | 
+          echo "create glue database"
+          aws glue create-database --database-input "{\"Name\":\"Table_Etl_Teste\"}" --endpoint https://glue.us-east-1.amazonaws.com
+
+      - name: create crawler
+        run : >
+          aws glue create-crawler --name crawlerteste --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt 
+          --database-name Table_Etl_Teste --targets "S3Targets=[{Path=s3://bucket-glue-incremental/input/a_processar/}]"
+          --table-prefix ELT-JOB-
+          --schema-change-policy UpdateBehavior=LOG,DeleteBehavior=LOG
+      
+      - name : Start Crawler
+        run : |
+          aws glue start-crawler --name crawlerteste
+
+      - name: Check Crawler Status
+        run: |
+          while : ; do
+            status=$(aws glue get-crawler --name crawlerteste | jq -r '.Crawler.State')
+            echo "Current Crawler Status: $status"
+            if [ "$status" == "READY" ]; then
+              echo "Crawler is ready."
+              aws s3 cp s3://bucket-glue-incremental/input/a_processar/ s3://bucket-glue-incremental/input/processados/ --recursive
+              aws s3 rm s3://bucket-glue-incremental/input/a_processar/ --recursive
+              break
+            fi
+            echo "Waiting for the crawler to be ready..."
+            sleep 30
+          done
