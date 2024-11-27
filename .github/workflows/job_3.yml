@@ -18,4 +18,17 @@ jobs:
           --region us-east-1 --output json --default-arguments '{"--job-language":"Python","--class":"transform_data"}'
           --endpoint https://glue.us-east-1.amazonaws.com
 
+      - name: Check Crawler Status and run glue job
+        run: |
+          while : ; do
+            status=$(aws glue get-crawler --name crawlerteste | jq -r '.Crawler.State')
+            echo "Current Crawler Status: $status"
+            if [ "$status" == "READY" ]; then
+              echo "Crawler is ready."
+              aws glue start-job-run --job-name my-testing-job
+              break
+            fi
+            echo "Waiting for the crawler to be ready..."
+            sleep 30
+          done
       
