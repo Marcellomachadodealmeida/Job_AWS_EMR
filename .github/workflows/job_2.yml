@@ -3,12 +3,7 @@ on: workflow_dispatch
 jobs:
   job_2:
     runs-on: ubuntu-latest
-    steps:
-      - name: Configure GitHub CLI
-        env:
-          GH_TOKEN: ${{ secrets.NEW_TOKEN }}
-        run: echo "token criada"
-        
+    steps:     
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
