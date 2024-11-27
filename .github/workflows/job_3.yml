@@ -14,8 +14,10 @@ jobs:
       - name: criando job glue
         run: >
           aws glue create-job --name my-testing-job --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt 
-          --command '{"Name":"gluestreaming"','"ScriptLocation":"s3://bucket-glue-incremental/scripts/"}'
+          --command '{"Name":"gluestreaming"','"ScriptLocation":"s3://bucket-glue-incremental/scripts/","PythonVersion":"3"}'
           --region us-east-1 --output json --default-arguments '{"--job-language":"Python","--class":"transform_data"}'
+          --max-capacity 2
+          --glue-version "4.0"
           --endpoint https://glue.us-east-1.amazonaws.com
 
       - name: Check Crawler Status and run glue job
