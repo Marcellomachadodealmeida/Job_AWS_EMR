@@ -1,0 +1,21 @@
+name: workflow_Glue_job3
+on: workflow_dispatch
+jobs:
+  job_2:
+    runs-on: ubuntu-latest
+    steps:     
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY}} 
+          aws-region: us-east-1
+
+      - name: criando job glue
+        run: |
+          - aws glue create-job --name my-testing-job --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt 
+          --command'{"Name":"gluestreaming"','"ScriptLocation":"s3://bucket-glue-incremental/scripts/"}'
+          --region us-east-1 --output json --default-arguments '{"--job-language":"Python","--class":"transform_data"}'
+          --endpoint https://glue.us-east-1.amazonaws.com
+
+      
