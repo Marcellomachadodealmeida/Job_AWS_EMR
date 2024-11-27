@@ -1,5 +1,3 @@
-
-
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 
@@ -41,4 +39,6 @@ def transform_data(data_source: str, output_uri: str) -> None:
 
 
 if __name__ == "__main__":
+    data_source = "s3://bucket-glue-incremental/input/a_processar/dados/"
+    output_uri = "s3://bucket-glue-incremental/output/"
     transform_data(args.data_source, args.output_uri)
