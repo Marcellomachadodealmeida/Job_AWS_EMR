@@ -14,7 +14,7 @@ jobs:
         
       - name: Configure GitHub CLI
         env:
-          GH_TOKEN: ${{ secrets.TOKEN_GIT_SECRET}}
+          GH_TOKEN: ${{ github.new_token_glue}}
         run: |
           gh auth login --with-token <<< "${{ secrets.TOKEN_GIT_SECRET}}"
       
@@ -32,7 +32,7 @@ jobs:
         
       - name: Configure GitHub CLI
         env:
-          GH_TOKEN: ${{ secrets.TOKEN_GIT_SECRET}}
+          GH_TOKEN: ${{ github.new_token_glue}}
         run: |
           gh auth login --with-token <<< "${{ secrets.TOKEN_GIT_SECRET}}"
           
@@ -50,7 +50,7 @@ jobs:
         
       - name: Configure GitHub CLI
         env:
-          GH_TOKEN: ${{ secrets.TOKEN_GIT_SECRET}}
+          GH_TOKEN: ${{ github.new_token_glue}}
         run: |
           gh auth login --with-token <<< "${{ secrets.TOKEN_GIT_SECRET}}"
           
