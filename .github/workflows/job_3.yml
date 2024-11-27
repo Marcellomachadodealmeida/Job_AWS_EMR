@@ -13,8 +13,7 @@ jobs:
 
       - name: criando job glue
         run: >
-          aws glue create-job --name my-testing-job --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt 
-          --command'{"Name":"gluestreaming"','"ScriptLocation":"s3://bucket-glue-incremental/scripts/"}'
+          aws glue create-job --name my-testing-job --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt --command'{"Name":"gluestreaming"','"ScriptLocation":"s3://bucket-glue-incremental/scripts/"}'
           --region us-east-1 --output json --default-arguments '{"--job-language":"Python","--class":"transform_data"}'
           --endpoint https://glue.us-east-1.amazonaws.com
 
