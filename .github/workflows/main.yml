@@ -16,7 +16,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.new_token_glue}}
         run: |
-          gh auth login --with-token <<< "${GH_TOKEN}"
+          gh auth login --with-token <<< "${{ github.new_token_glue}}"
       
       - name: Trigger Workflow 1
         run: |
@@ -34,11 +34,29 @@ jobs:
         env:
           GH_TOKEN: ${{ github.new_token_glue}}
         run: |
-          gh auth login --with-token <<< "${GH_TOKEN}"
+          gh auth login --with-token <<< "${{ github.new_token_glue}}}"
           
       - name: Trigger Workflow 2
         run: |
           gh workflow run job_2.yml
+
+  trigger-workflow3:
+    runs-on: ubuntu-latest
+    needs: trigger-workflow2
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Configure GitHub CLI
+        env:
+          GH_TOKEN: ${{ github.new_token_glue}}
+        run: |
+          gh auth login --with-token <<< "${{ github.new_token_glue}}}"
+          
+      - name: Trigger Workflow 3
+        run: |
+          gh workflow run job_3.yml
           
 
     
