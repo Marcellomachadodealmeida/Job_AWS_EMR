@@ -14,9 +14,9 @@ jobs:
         
       - name: Configure GitHub CLI
         env:
-          GH_TOKEN: ${{ github.new_token_glue}}
+          GH_TOKEN: ${{ secrets.TOKEN_GIT_SECRET}}
         run: |
-          gh auth login --with-token <<< "${{ github.new_token_glue}}"
+          gh auth login --with-token <<< "${{ secrets.TOKEN_GIT_SECRET}}"
       
       - name: Trigger Workflow 1
         run: |
@@ -32,9 +32,9 @@ jobs:
         
       - name: Configure GitHub CLI
         env:
-          GH_TOKEN: ${{ github.new_token_glue}}
+          GH_TOKEN: ${{ secrets.TOKEN_GIT_SECRET}}
         run: |
-          gh auth login --with-token <<< "${{ github.new_token_glue}}}"
+          gh auth login --with-token <<< "${{ secrets.TOKEN_GIT_SECRET}}"
           
       - name: Trigger Workflow 2
         run: |
@@ -50,9 +50,9 @@ jobs:
         
       - name: Configure GitHub CLI
         env:
-          GH_TOKEN: ${{ github.new_token_glue}}
+          GH_TOKEN: ${{ secrets.TOKEN_GIT_SECRET}}
         run: |
-          gh auth login --with-token <<< "${{ github.new_token_glue}}}"
+          gh auth login --with-token <<< "${{ secrets.TOKEN_GIT_SECRET}}"
           
       - name: Trigger Workflow 3
         run: |
