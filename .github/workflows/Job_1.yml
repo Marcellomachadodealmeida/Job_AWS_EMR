@@ -7,11 +7,6 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
         
-      - name: Configure GitHub CLI
-        env:
-          GH_TOKEN: ${{ github.new_token_glue}}
-        run: echo "token criada"
-        
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
