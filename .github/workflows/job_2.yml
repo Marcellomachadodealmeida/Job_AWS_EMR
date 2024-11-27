@@ -52,8 +52,8 @@ jobs:
             echo "Current Crawler Status: $status"
             if [ "$status" == "READY" ]; then
               echo "Crawler is ready."
-              aws s3 cp s3://bucket-glue-incremental/input/a_processar/ s3://bucket-glue-incremental/input/processados/ --recursive
-              aws s3 rm s3://bucket-glue-incremental/input/a_processar/ --recursive
+              aws s3 cp s3://bucket-glue-incremental/input/a_processar/dados/ s3://bucket-glue-incremental/input/processados/ --recursive --exclude "*" --include "*.csv"
+              aws s3 rm s3://bucket-glue-incremental/input/a_processar/dados/ --recursive
               break
             fi
             echo "Waiting for the crawler to be ready..."
