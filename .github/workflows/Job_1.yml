@@ -18,5 +18,5 @@ jobs:
         env:
           BUCKET_NAME: bucket-glue-incremental
         run: | 
-          aws s3 cp input/* s3://bucket-glue-incremental/input/a_processar/
+          aws s3 cp input/* s3://bucket-glue-incremental/input/a_processar/dados/
           aws s3 cp scripts/main.py s3://bucket-glue-incremental/scripts/
