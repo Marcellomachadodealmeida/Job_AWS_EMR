@@ -1,44 +1,49 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+from awsglue import DynamicFrame
 
-def transform_data(data_source: str, output_uri: str) -> None:
-    with SparkSession.builder.appName("Primeiro job EMR").getOrCreate() as spark:
-        df = spark.read.option("header","true").csv(data_source)
+def transform_data(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
+    for alias, frame in mapping.items():
+        frame.toDF().createOrReplaceTempView(alias)
+    result = spark.sql(query)
+    return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
 
-        df = df.select(
-            col("Name").alias("nome"),
-            col("Description").alias("descricao"),
-            col("Violation Type").alias("tipo_violacao")            
-        )
+# Script generated for node AWS Glue Data Catalog
+table_name = args['TABLE_NAME']
+AWSGLUE_DF = glueContext.create_dynamic_frame.from_catalog(database="table_etl_teste", table_name=table_name, transformation_ctx="AWSGLUE_DF")
 
-
-        df.createOrReplaceTempView("restaurantes_violacoes")
-
-        QUERY_GROUP_BY_RED = """
+# Script generated for node SQL Query
+QUERY_GROUP_BY_RED = """
             SELECT nome, descricao, count(*) AS total_violacoes_red
             FROM restaurantes_violacoes
             WHERE tipo_violacao = "RED"
             GROUP BY nome
         """
-
-        QUERY_GROUP_BY_BLUE = """
+ QUERY_GROUP_BY_BLUE = """
             SELECT nome, descricao, count(*) AS total_violacoes_red
             FROM restaurantes_violacoes
             WHERE tipo_violacao = "BLUE"
             GROUP BY nome
         """
 
-        df_result_blue = spark.sql(QUERY_GROUP_BY_BLUE)
-        df_result_red = spark.sql(QUERY_GROUP_BY_RED)
+EXEC_RED_QUERY = transform_data(glueContext, query = QUERY_GROUP_BY_RED, mapping = {"myDataSource":AWSGLUE_DF}, transformation_ctx = "EXEC_RED_QUERY")
 
+EXEC_BLUE_QUERY = transform_data(glueContext, query = QUERY_GROUP_BY_BLUE, mapping = {"myDataSource":AWSGLUE_DF}, transformation_ctx = "EXEC_BLUE_QUERY")
 
-        # Gravando os resultados em tabelas Parquet
+# Script generated for node Amazon S3
+Store_Table_RED = glueContext.write_dynamic_frame.from_options(frame=EXEC_RED_QUERY, connection_type="s3", format="glueparquet", connection_options={"path": "s3://bucket-glue-incremental/output/", "partitionKeys": []}, format_options={"compression": "snappy"}, transformation_ctx="Store_Table_RED")
 
-        df_result_blue.write.mode("overwrite").parquet(output_uri)
-        df_result_red.write.mode("overwrite").parquet(output_uri)
+Store_Table_BLUE = glueContext.write_dynamic_frame.from_options(frame=EXEC_BLUE_QUERY, connection_type="s3", format="glueparquet", connection_options={"path": "s3://bucket-glue-incremental/output/", "partitionKeys": []}, format_options={"compression": "snappy"}, transformation_ctx="Store_Table_BLUE")
 
-
-if __name__ == "__main__":
-    data_source = "s3://bucket-glue-incremental/input/a_processar/dados/"
-    output_uri = "s3://bucket-glue-incremental/output/"
-    transform_data(args.data_source, args.output_uri)
+job.commit()
+     
