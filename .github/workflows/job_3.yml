@@ -25,7 +25,8 @@ jobs:
             echo "Current Crawler Status: $status"
             if [ "$status" == "READY" ]; then
               echo "Crawler is ready."
-              aws glue start-job-run --job-name my-testing-job
+              TABLE_NAME=$(aws glue get-tables --database-name table_etl_teste --query 'TableList[0].Name' --output text)
+              aws glue start-job-run --job-name meu-glue-job --arguments "{\"--TABLE_NAME\":\"$TABLE_NAME\"}"
               break
             fi
             echo "Waiting for the crawler to be ready..."
