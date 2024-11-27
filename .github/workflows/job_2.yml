@@ -29,6 +29,7 @@ jobs:
       - name: Take action if database does not exist 
         if: steps.check-db.outputs.exists == 'false' 
         run: | 
+          DB_NAME="Table_Etl_Teste"
           echo "create glue database"
           aws glue create-database --database-input "{\"Name\":\"${DB_NAME}\"}" --endpoint https://glue.us-east-1.amazonaws.com
 
