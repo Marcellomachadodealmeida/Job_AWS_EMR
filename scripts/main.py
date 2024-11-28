@@ -29,7 +29,7 @@ QUERY_GROUP_BY_RED = """
             WHERE Violation Type = "RED"
             GROUP BY Name
         """
- QUERY_GROUP_BY_BLUE = """
+QUERY_GROUP_BY_BLUE = """
             SELECT Name as nome, Description as descricao, Violation Type as tipo_violacao, count(*) AS total_violacoes_red
             FROM myDataSource
             WHERE Violation Type = "BLUE"
