@@ -30,7 +30,7 @@ jobs:
               TABLE_NAME=$(aws glue get-tables --database-name table_etl_teste --query 'TableList[0].Name' --output text)
               echo "$TABLE_NAME"
               sleep 4
-              aws glue start-job-run --job-name meu-glue-job --arguments "{\"--TABLE_NAME\":\"$TABLE_NAME\"}"
+              aws glue start-job-run --job-name my-testing-job --arguments "{\"--TABLE_NAME\":\"$TABLE_NAME\"}"
               break
             fi
             echo "Waiting for the crawler to be ready..."
