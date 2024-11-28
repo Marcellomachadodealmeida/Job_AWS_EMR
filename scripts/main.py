@@ -2,22 +2,16 @@ import sys
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
 def transform_data(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
     for alias, frame in mapping.items():
-        frame.toDF().select(
-            col("Name").alias("nome"),
-            col("Description").alias("descricao"),
-            col("Violation Type").alias("tipo_violacao")            
-        ).createOrReplaceTempView(alias)
+        frame.toDF().createOrReplaceTempView(alias)
     result = spark.sql(query)
     return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+args = getResolvedOptions(sys.argv, ['JOB_NAME','TABLE_NAME'])
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
@@ -30,16 +24,16 @@ AWSGLUE_DF = glueContext.create_dynamic_frame.from_catalog(database="table_etl_t
 
 # Script generated for node SQL Query
 QUERY_GROUP_BY_RED = """
-            SELECT nome, descricao, count(*) AS total_violacoes_red
+            SELECT Name as nome, Description as descricao, Violation Type as tipo_violacao, count(*) AS total_violacoes_red
             FROM myDataSource
-            WHERE tipo_violacao = "RED"
-            GROUP BY nome
+            WHERE Violation Type = "RED"
+            GROUP BY Name
         """
  QUERY_GROUP_BY_BLUE = """
-            SELECT nome, descricao, count(*) AS total_violacoes_red
+            SELECT Name as nome, Description as descricao, Violation Type as tipo_violacao, count(*) AS total_violacoes_red
             FROM myDataSource
-            WHERE tipo_violacao = "BLUE"
-            GROUP BY nome
+            WHERE Violation Type = "BLUE"
+            GROUP BY Name
         """
 
 EXEC_RED_QUERY = transform_data(glueContext, query = QUERY_GROUP_BY_RED, mapping = {"myDataSource":AWSGLUE_DF}, transformation_ctx = "EXEC_RED_QUERY")
