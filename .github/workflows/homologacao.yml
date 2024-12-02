@@ -19,7 +19,7 @@ jobs:
           BUCKET_NAME: bucket-glue-incremental
         run: | 
           aws s3 cp input/* s3://bucket-glue-incremental/Homologacao/input_homol/a_processar/dados/
-          aws s3 cp scripts/main.py s3://bucket-glue-incremental/Homologacao/scripts_homol/glue/
+          aws s3 cp scripts/main_homol.py s3://bucket-glue-incremental/Homologacao/scripts_homol/glue/
 
 
       - name: criando job glue
