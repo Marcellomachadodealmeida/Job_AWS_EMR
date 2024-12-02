@@ -1,0 +1,32 @@
+name: workflow_Glue_job1
+on: workflow_dispatch
+jobs:
+  job_1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY}} 
+          aws-region: us-east-1
+
+      - name: Deploy no S3
+        env:
+          BUCKET_NAME: bucket-glue-incremental
+        run: | 
+          aws s3 cp input/* s3://bucket-glue-incremental/Homologacao/input_homol/a_processar/dados/
+          aws s3 cp scripts/main.py s3://bucket-glue-incremental/Homologacao/scripts_homol/glue/
+
+
+      - name: criando job glue
+        run: >
+          aws glue create-job --name ELT_JOB_BRONZE --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt 
+          --command '{"Name":"glueetl"','"ScriptLocation":"s3://bucket-glue-incremental/Homologacao/scripts_homol/","PythonVersion":"3"}'
+          --region us-east-1 --output json --default-arguments '{"--job-language":"Python"}'
+          --max-capacity 2
+          --glue-version "4.0"
+          --endpoint https://glue.us-east-1.amazonaws.com    
