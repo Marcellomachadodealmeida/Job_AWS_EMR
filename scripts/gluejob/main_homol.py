@@ -1,9 +1,9 @@
-import pandas as pd
-import re
+
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import expr
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col,regexp_replace
 from awsglue.utils import *
+
 
 # Inicializar SparkSession 
 spark = SparkSession.builder.appName("PandasToSparkDataFrame").getOrCreate()
@@ -16,32 +16,20 @@ s3_bucket_name = args['s3_bucket']
 s3_input_path_name = args['s3_input_path']
 s3_output_path_name = args['s3_output_path']
 
-# Carregando arquivo csv do bucket s3
-dtype = {6: 'str'}
-df = pd.read_csv('s3://bucket-glue-incremental/Homologacao/input_homol/a_processar/dados/*',dtype=dtype)
+df = spark.read.csv(s3_input_path_name, header=True, inferSchema=True)
 
-# Remove caracteres que não sejam letras ou números 
-def remove_special_characters(text):
-    return re.sub(r'[^a-zA-Z0-9\s]', '', text)
+for coluna in df.columns: 
+    df = df.withColumn(coluna, regexp_replace(col(coluna).cast("string"), "[^a-zA-Z0-9]", ""))
 
-df = df.apply(lambda x: x.astype(str).apply(remove_special_characters))
+for coluna in df.columns: 
+    df = df.withColumn(coluna, regexp_replace(col(coluna).cast("string"), " ", "_"))
 
-df = df.replace(r' ', '_', regex=True)
-
-colunas_solicitadas =['Name','Description','Violation Type','Inspection Date']
-df_edited = df[colunas_solicitadas]
-
-df_edited.rename(columns={'Name':'nome','Description':'descricao','Violation Type':'tipo_violacao','Inspection Date':'data_inspecao'})
-
-df_edited=df.replace('nan','vazio')
-
-for column, values in df_edited.items(): 
-    print(f"Coluna: {column}") 
-    print(values)
-
-spark_df = spark.createDataFrame(df_edited)
-
-spark_df.createOrReplaceTempView("Tb_blue_tipo_violacao")
+df_editado = df.select(
+    col("Name").alias("nome"),
+    col("Description").alias("descricao"),
+    col("Violation Type").alias("tipo_violacao")
+)
+df_editado.createOrReplaceTempView("Tb_blue_tipo_violacao")
 
 query_table = """
     SELECT nome, tipo_violacao,count(*) as contagem
