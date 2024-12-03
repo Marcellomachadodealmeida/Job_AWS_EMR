@@ -15,7 +15,7 @@ jobs:
       - name: Start Glue Job 
         id: start_glue_job
         run: |
-          JOB_NAME: 'ELT_JOB_BRONZE'
+          JOB_NAME='ELT_JOB_BRONZE'
           job_run_id=$(aws glue start-job-run --job-name $JOB_NAME --query 'JobRunId' --output text) 
           get_status=$(aws glue get-job-run --job-name $JOB_NAME --run-id $job_run_id)
           status=$(echo $get_status | jq -r '.JobRun.JobRunState')
