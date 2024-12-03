@@ -1,4 +1,3 @@
-
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import expr
 from pyspark.sql.functions import col,regexp_replace
@@ -9,12 +8,14 @@ from awsglue.utils import *
 spark = SparkSession.builder.appName("PandasToSparkDataFrame").getOrCreate()
 
 # Recuperando variáveis
-args = getResolvedOptions(sys.argv, ['s3_bucket','s3_input_path','s3_output_path'])
+args = getResolvedOptions(sys.argv, ['s3_bucket','s3_input_path','s3_output_path','s3_output_path_csv'])
 
 # Definir o caminho do arquivo CSV no S3
+
 s3_bucket_name = args['s3_bucket']
 s3_input_path_name = args['s3_input_path']
 s3_output_path_name = args['s3_output_path']
+s3_output_path_csv = args['s3_output_path_csv']
 
 df = spark.read.csv(s3_input_path_name, header=True, inferSchema=True)
 
@@ -43,5 +44,3 @@ tb_final = spark.sql(query_table)
 tb_final.write.csv(s3_output_path_csv, mode='overwrite', header=True)
 
 tb_final.write.parquet(s3_output_path_name, mode='overwrite')
-
-job.commit()
