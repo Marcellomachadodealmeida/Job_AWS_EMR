@@ -17,9 +17,9 @@ jobs:
         run: |
           JOB_NAME='ELT_JOB_BRONZE'
           job_run_id=$(aws glue start-job-run --job-name $JOB_NAME --query 'JobRunId' --output text)
-          echo '$job_run_id'
+          echo $job_run_id
           get_status=$(aws glue get-job-run --job-name $JOB_NAME --run-id $job_run_id)
-          status=$(echo '$get_status' | jq -r '.JobRun.JobRunState')
+          status=$(echo $get_status | jq -r '.JobRun.JobRunState')
            while true; do
              if [ "$status" == "SUCCEEDED" ] || [ "$status" == "FAILED" ];then
                break
