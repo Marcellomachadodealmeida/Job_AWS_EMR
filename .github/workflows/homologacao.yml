@@ -26,7 +26,8 @@ jobs:
         run: >
           aws glue create-job --name ELT_JOB_BRONZE --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt 
           --command '{"Name":"glueetl"','"ScriptLocation":"s3://bucket-glue-incremental/Homologacao/scripts_homol/","PythonVersion":"3"}'
-          --region us-east-1 --output json --default-arguments '{"--job-language":"Python"}'
-          --max-capacity 2
+          --region us-east-1 --output json 
+          --default-arguments '{"--job-language":"Python","--s3_bucket":"bucket-glue-incremental","s3_input_path":"s3://bucket-glue-incremental/Homologacao/input_homol/a_processar/dados/","s3_output_path":"s3://bucket-glue-incremental/Homologacao/output_homol/"}'
+          --max-capacity 4
           --glue-version "4.0"
           --endpoint https://glue.us-east-1.amazonaws.com    
