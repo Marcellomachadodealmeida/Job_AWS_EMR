@@ -24,7 +24,7 @@ jobs:
             if [ "$status" = "SUCCEEDED" ] || [ "$status" = "FAILED" ];then
               break
             fi
-            echo "Waiting for the job to complete..." 
+            echo "Waiting for the job to complete... status : $status" 
             sleep 30 
           done
 
