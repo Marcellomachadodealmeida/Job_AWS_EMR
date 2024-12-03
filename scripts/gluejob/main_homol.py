@@ -35,7 +35,7 @@ df_edited.rename(columns={'Name':'nome','Description':'descricao','Violation Typ
 
 df_edited=df.replace('nan','vazio')
 
-for column, values in df_edited_1.items(): 
+for column, values in df_edited.items(): 
     print(f"Coluna: {column}") 
     print(values)
 
