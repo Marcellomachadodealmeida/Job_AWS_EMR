@@ -20,18 +20,18 @@ jobs:
           echo $job_run_id
           get_status=$(aws glue get-job-run --job-name $JOB_NAME --run-id $job_run_id)
           status=$(echo $get_status | jq -r '.JobRun.JobRunState')
-           while true; do
-             if [ "$status" == "SUCCEEDED" ] || [ "$status" == "FAILED" ];then
-               break
-             fi
-             echo "Waiting for the job to complete..." 
+          while true; do
+            if [ "$status" = "SUCCEEDED" ] || [ "$status" = "FAILED" ];then
+              break
+            fi
+            echo "Waiting for the job to complete..." 
             sleep 30 
           done
 
-          if [ "$status" == "SUCCEEDED" ]; then
+          if [ "$status" = "SUCCEEDED" ]; then
             echo "Job completed successfully!"
                         
-          elif [ "$status" == "FAILED" ]; then 
+          elif [ "$status" = "FAILED" ]; then 
             echo "Job failed." 
             exit 1
           fi 
