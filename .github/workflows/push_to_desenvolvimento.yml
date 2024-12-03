@@ -17,14 +17,9 @@ jobs:
         env:
           AWS_REGION: us-east-1
           JOB_NAME: 'ELT_JOB_BRONZE'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          GIT_AUTHOR_NAME: ${{ github.actor }} 
-          GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com 
-          GIT_COMMITTER_NAME: ${{ github.actor }} 
-          GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
         run: |
           job_run_id=$(aws glue start-job-run --job-name $JOB_NAME --query 'JobRunId' --output text) 
-          get_status = $(aws glue get-job-run --job-name $JOB_NAME --run-id $job_run_id)
+          get_status=$(aws glue get-job-run --job-name $JOB_NAME --run-id $job_run_id)
           status=$(echo $get_status | jq -r '.JobRun.JobRunState')
            while true; do
              if [ "$status" == "SUCCEEDED" ] || [ "$status" == "FAILED" ];then
@@ -37,7 +32,7 @@ jobs:
           if [ "$status" == "SUCCEEDED" ]; then
             echo "Job completed successfully!"
                         
-            elif [ "$status" == "FAILED" ]; then 
+          elif [ "$status" == "FAILED" ]; then 
             echo "Job failed." 
             exit 1
           fi 
