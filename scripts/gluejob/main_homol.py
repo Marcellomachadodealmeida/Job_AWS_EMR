@@ -18,7 +18,7 @@ s3_output_path_name = args['s3_output_path']
 
 # Carregando arquivo csv do bucket s3
 dtype = {6: 'str'}
-df = pd.read_csv('s3://bucket-glue-incremental/Homologacao/input_homol/a_processar/dados/',dtype=dtype)
+df = pd.read_csv('s3://bucket-glue-incremental/Homologacao/input_homol/a_processar/dados/*',dtype=dtype)
 
 # Remove caracteres que não sejam letras ou números 
 def remove_special_characters(text):
@@ -35,15 +35,21 @@ df_edited.rename(columns={'Name':'nome','Description':'descricao','Violation Typ
 
 df_edited=df.replace('nan','vazio')
 
+for column, values in df_edited_1.items(): 
+    print(f"Coluna: {column}") 
+    print(values)
+
 spark_df = spark.createDataFrame(df_edited)
 
 spark_df.createOrReplaceTempView("Tb_blue_tipo_violacao")
 
 query_table = """
-    SELECT nome, tipo_violacao, count(*) as Contagem
+    SELECT nome, tipo_violacao,count(*) as contagem
     from Tb_blue_tipo_violacao
     where tipo_violacao = "BLUE"
+    group by nome, tipo_violacao
 """
+
 tb_final = spark.sql(query_table)
 
 tb_final.write.csv(s3_output_path_csv, mode='overwrite', header=True)
