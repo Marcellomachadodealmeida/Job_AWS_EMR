@@ -8,6 +8,7 @@ from awsglue.utils import *
 # Inicializar SparkSession 
 spark = SparkSession.builder.appName("PandasToSparkDataFrame").getOrCreate()
 
+# Recuperando variáveis
 args = getResolvedOptions(sys.argv, ['s3_bucket','s3_input_path','s3_output_path'])
 
 # Definir o caminho do arquivo CSV no S3
@@ -15,11 +16,12 @@ s3_bucket_name = args['s3_bucket']
 s3_input_path_name = args['s3_input_path']
 s3_output_path_name = args['s3_output_path']
 
+# Carregando arquivo csv do bucket s3
 dtype = {6: 'str'}
 df = pd.read_csv('s3://bucket-glue-incremental/Homologacao/input_homol/a_processar/dados/',dtype=dtype)
 
+# Remove caracteres que não sejam letras ou números 
 def remove_special_characters(text):
-    # Remove caracteres que não sejam letras ou números 
     return re.sub(r'[^a-zA-Z0-9\s]', '', text)
 
 df = df.apply(lambda x: x.astype(str).apply(remove_special_characters))
@@ -35,8 +37,17 @@ df_edited=df.replace('nan','vazio')
 
 spark_df = spark.createDataFrame(df_edited)
 
-spark_df.write.csv(s3_output_path_csv, mode='overwrite', header=True)
+spark_df.createOrReplaceTempView("Tb_blue_tipo_violacao")
 
-spark_df.write.parquet(s3_output_path_name, mode='overwrite')
+query_table = """
+    SELECT nome, tipo_violacao, count(*) as Contagem
+    from Tb_blue_tipo_violacao
+    where tipo_violacao = "BLUE"
+"""
+tb_final = spark.sql(query_table)
+
+tb_final.write.csv(s3_output_path_csv, mode='overwrite', header=True)
+
+tb_final.write.parquet(s3_output_path_name, mode='overwrite')
 
 job.commit()
