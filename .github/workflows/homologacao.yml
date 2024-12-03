@@ -27,7 +27,7 @@ jobs:
           aws glue create-job --name ELT_JOB_BRONZE --role arn:aws:iam::654654178935:role/service-role/AWSGlueServiceRole-testeelt 
           --command '{"Name":"glueetl"','"ScriptLocation":"s3://bucket-glue-incremental/Homologacao/scripts_homol/glue/main_homol.py","PythonVersion":"3"}'
           --region us-east-1 --output json 
-          --default-arguments '{"--job-language":"Python","--s3_bucket":"bucket-glue-incremental","--s3_input_path":"\"s3://bucket-glue-incremental/Homologacao/input_homol/a_processar/dados/\"","--s3_output_path":"\"s3://bucket-glue-incremental/Homologacao/output_homol/\"","--s3_output_path_csv":"\"s3://bucket-glue-incremental/Homologacao/output_homol_csv/\""}'
+          --default-arguments '{"--job-language":"Python","--s3_bucket":"bucket-glue-incremental","--s3_input_path":"\"s3://bucket-glue-incremental/Homologacao/input_homol/a_processar/dados/Food_Establishment.csv\"","--s3_output_path":"\"s3://bucket-glue-incremental/Homologacao/output_homol/\"","--s3_output_path_csv":"\"s3://bucket-glue-incremental/Homologacao/output_homol_csv/\""}'
           --max-capacity 10
           --glue-version "4.0"
           --endpoint https://glue.us-east-1.amazonaws.com
