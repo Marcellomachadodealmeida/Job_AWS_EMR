@@ -6,7 +6,7 @@ on:
       
 jobs:
   trigger-workflow-homol:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -23,7 +23,7 @@ jobs:
           gh workflow run homologacao.yml
 
   trigger-workflow-push_to_desenvolvimento:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: trigger-workflow-homol
 
     steps:
