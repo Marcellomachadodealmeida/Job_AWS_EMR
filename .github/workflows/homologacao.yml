@@ -1,4 +1,4 @@
-1name: workflow_Glue_job1
+name: workflow_Glue_job1
 on: workflow_dispatch
 jobs:
   job_1:
@@ -30,5 +30,4 @@ jobs:
           --default-arguments '{"--job-language":"Python","--s3_bucket":"bucket-glue-incremental","--s3_input_path":"s3://bucket-glue-incremental/Homologacao/input_homol/a_processar/dados/*","--s3_output_path":"s3://bucket-glue-incremental/Homologacao/output_homol/","--s3_output_path_csv":"s3://bucket-glue-incremental/Homologacao/output_homol_csv/"}'
           --max-capacity 4
           --glue-version "4.0"
-          --endpoint https://glue.us-east-1.amazonaws.com    
-1
+          --endpoint https://glue.us-east-1.amazonaws.com
